@@ -1,30 +1,30 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import axios from 'axios'
 
 const id = ref('')
 const password = ref('')
-const money = ref(null)
 const isLoggedIn = ref(false)
 const errorMessage = ref('')
 const stocks = ref([])
+const player = ref({ money: 0, stocks: [] })
 
 // 로그인 요청
 const login = async () => {
   try {
     const res = await axios.post('/api/players/login', { id: id.value, password: password.value })
     isLoggedIn.value = true
-    await fetchPlayerMoney()
+    await fetchPlayer()
     await fetchStocks()
   } catch (e) {
     alert('로그인 실패: ' + (e.response?.data?.message || e.message))
   }
 }
 
-// 사용자 정보 조회
-const fetchPlayerMoney = async () => {
-  const res = await axios.get(`/api/players/${id.value}`)
-  money.value = res.data.money
+// 플레이어 전체 정보 조회 (자산 + 보유 주식)
+const fetchPlayer = async () => {
+  const res = await axios.get(`/api/players/${id.value}/details`)
+  player.value = res.data
 }
 
 // 전체 주식 목록 조회
@@ -35,32 +35,57 @@ const fetchStocks = async () => {
 
 // 매수 요청
 const buyStock = async (stockName) => {
+  const quantity = parseInt(prompt(`${stockName} 몇 주 매수하시겠습니까?`), 10)
+  if (isNaN(quantity) || quantity <= 0) {
+    alert('올바른 수량을 입력해주세요.')
+    return
+  }
+
   try {
-    await axios.post('/api/trade/buy', { playerId: id.value, stockName })
-    await fetchPlayerMoney()
-    alert(`${stockName} 매수 성공!`)
+    await axios.post('/api/trade/buy', {
+      playerId: id.value,
+      stockName,
+      quantity
+    })
+    await fetchPlayer()
+    alert(`${stockName} ${quantity}주 매수 성공!`)
   } catch (e) {
-    alert('매수 실패: ' + (e.response?.data?.message || e.message))
+    const message = e.response?.data?.message || e.message
+    alert('매수 실패: ' + message)
   }
 }
 
+
 // 매도 요청
 const sellStock = async (stockName) => {
+  const quantity = parseInt(prompt(`${stockName} 몇 주 매도하시겠습니까?`), 10)
+  if (isNaN(quantity) || quantity <= 0) {
+    alert('올바른 수량을 입력해주세요.')
+    return
+  }
+
   try {
-    await axios.post('/api/trade/sell', { playerId: id.value, stockName })
-    await fetchPlayerMoney()
-    alert(`${stockName} 매도 성공!`)
+    const res = await axios.post('/api/trade/sell', {
+      playerId: id.value,
+      stockName,
+      quantity
+    })
+    await fetchPlayer()
+    alert(`${stockName} ${quantity}주 매도 성공!`)
   } catch (e) {
-    alert('매도 실패: ' + (e.response?.data?.message || e.message))
+    const message = e.response?.data?.message || e.message
+    alert('매도 실패: ' + message)
   }
 }
+
+
 // 로그아웃
 const logout = () => {
   id.value = ''
   password.value = ''
-  welcomeMessage.value = ''
   isLoggedIn.value = false
-  money.value = null
+  player.value = { money: 0, stocks: [] }
+  stocks.value = []
   errorMessage.value = ''
 }
 </script>
@@ -88,13 +113,23 @@ const logout = () => {
       </form>
     </div>
 
-    <!-- 로그인 결과 -->
+    <!-- 로그인 후 환영 메시지 및 자산 -->
     <div v-if="isLoggedIn" class="welcome">
       <h3>{{ id }}님 환영합니다!</h3>
-      <p v-if="money !== null">초기 자본: {{ money.toLocaleString() }} 원</p>
+      <p>초기 자본: {{ player.money.toLocaleString() }} 원</p>
     </div>
 
-    <!-- 📦 주식 목록 박스 -->
+    <!-- 보유 주식 -->
+    <div v-if="isLoggedIn && player.stocks.length">
+      <h3>📦 보유 주식</h3>
+      <ul>
+        <li v-for="s in player.stocks" :key="s.name">
+          {{ s.name }} - {{ s.quantity }}주 ({{ s.price.toLocaleString() }}원)
+        </li>
+      </ul>
+    </div>
+
+    <!-- 📈 주식 목록 -->
     <div v-if="isLoggedIn" class="stock-container">
       <h3>📈 주식 목록</h3>
       <table border="1" cellpadding="10">
@@ -110,8 +145,8 @@ const logout = () => {
           <tr v-for="stock in stocks" :key="stock.name">
             <td>{{ stock.name }}</td>
             <td>{{ stock.price.toLocaleString() }} 원</td>
-            <td><button @click="">매수</button></td>
-            <td><button @click="">매도</button></td>
+            <td><button @click="buyStock(stock.name)">매수</button></td>
+            <td><button @click="sellStock(stock.name)">매도</button></td>
           </tr>
         </tbody>
       </table>
