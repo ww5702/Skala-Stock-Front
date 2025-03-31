@@ -90,7 +90,6 @@ const logout = () => {
 
 <template>
   <div class="main-wrapper">
-    <!-- 타이틀 -->
     <h1 class="main-title">SKALA 주식 시장</h1>
 
     <!-- 로그아웃 버튼 -->
@@ -98,7 +97,7 @@ const logout = () => {
       <button @click="logout">로그아웃</button>
     </div>
 
-    <!-- 로그인 폼 -->
+    <!-- 로그인 박스 -->
     <div v-if="!isLoggedIn" class="login-box">
       <h2>로그인</h2>
       <form @submit.prevent="login">
@@ -114,54 +113,55 @@ const logout = () => {
       </form>
     </div>
 
-    <!-- 로그인 후 환영 메시지 -->
+    <!-- 로그인 후 화면 -->
     <div v-if="isLoggedIn" class="welcome">
       <h2 class="welcome-title">🎉 {{ id }}님 환영합니다!</h2>
       <hr class="divider" />
 
-      <div class="player-info-wrapper">
-        <!-- 왼쪽: 자산 -->
-        <div class="money-box">
-          <p>💰 초기 자본:</p>
-          <p class="bold-money">{{ player.money.toLocaleString() }} 원</p>
+      <div class="layout-grid centered-layout align-top">
+        <!-- 왼쪽: 주식 목록 -->
+        <div class="stock-container bordered-box">
+          <h3 class="stock-title">📈 주식 목록</h3>
+          <table class="stock-table">
+            <thead>
+              <tr>
+                <th>주식 이름</th>
+                <th>가격</th>
+                <th>매수</th>
+                <th>매도</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="stock in stocks" :key="stock.name">
+                <td>{{ stock.name }}</td>
+                <td>{{ stock.price.toLocaleString() }} 원</td>
+                <td><button class="trade-btn buy" @click="buyStock(stock.name)">매수</button></td>
+                <td><button class="trade-btn sell" @click="sellStock(stock.name)">매도</button></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
-        <!-- 오른쪽: 보유 주식 -->
-        <div class="stocks-box">
-          <p class="stock-title">📦 보유 주식</p>
-          <div class="scrollable-stocks">
-            <p v-if="player.stocks.length === 0">보유한 주식이 없습니다.</p>
-            <ul v-else>
-              <li v-for="s in player.stocks" :key="s.name">
-                {{ s.name }} - {{ s.quantity }}주 ({{ s.price.toLocaleString() }}원)
-              </li>
-            </ul>
+        <!-- 오른쪽: 초기 자본 + 보유 주식 -->
+        <div class="player-info-column align-start">
+          <div class="money-box bordered-box">
+            <p>💰 초기 자본:</p>
+            <p class="bold-money">{{ player.money.toLocaleString() }} 원</p>
+          </div>
+
+          <div class="stocks-box bordered-box">
+            <p class="stock-title">📦 보유 주식</p>
+            <div class="scrollable-stocks">
+              <p v-if="player.stocks.length === 0">보유한 주식이 없습니다.</p>
+              <ul v-else>
+                <li v-for="s in player.stocks" :key="s.name">
+                  {{ s.name }} - {{ s.quantity }}주 ({{ s.price.toLocaleString() }}원)
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- 주식 목록 -->
-    <div v-if="isLoggedIn" class="stock-container">
-      <h3 class="stock-title">📈 주식 목록</h3>
-      <table class="stock-table">
-        <thead>
-          <tr>
-            <th>주식 이름</th>
-            <th>가격</th>
-            <th>매수</th>
-            <th>매도</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="stock in stocks" :key="stock.name">
-            <td>{{ stock.name }}</td>
-            <td>{{ stock.price.toLocaleString() }} 원</td>
-            <td><button class="trade-btn buy" @click="buyStock(stock.name)">매수</button></td>
-            <td><button class="trade-btn sell" @click="sellStock(stock.name)">매도</button></td>
-          </tr>
-        </tbody>
-      </table>
     </div>
 
     <!-- 에러 메시지 -->
@@ -264,7 +264,7 @@ const logout = () => {
   border: none;
   height: 2px;
   background-color: #ccc;
-  width: 50%;
+  width: 400%;
   margin: 1.2rem auto;
 }
 
@@ -302,7 +302,7 @@ const logout = () => {
 }
 
 .scrollable-stocks {
-  max-height: 50px;      /* 최대 높이 제한 */
+  max-height: 800px;      /* 최대 높이 제한 */
   overflow-y: auto;       /* 수직 스크롤 허용 */
   border-top: 1px solid #eee;
   padding-top: 0.5rem;
@@ -316,7 +316,7 @@ const logout = () => {
   margin: 2rem auto;
   background-color: #ffffff;
   border-radius: 12px;
-  max-width: 800px;
+  max-width: 1200px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
@@ -359,6 +359,44 @@ const logout = () => {
 
 .trade-btn:hover {
   opacity: 0.85;
+}
+.layout-grid {
+  display: flex;
+  align-items: flex-start; 
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.centered-layout {
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+  width: fit-content;
+}
+
+.player-info-column {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.bordered-box {
+  background-color: #ffffff;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border: 1px solid #ccc;
+  min-width: 260px;
+  max-width: 400px;
+  text-align: left;
+}
+
+.stock-container,
+.money-box,
+.stocks-box {
+  margin-top: 0;
 }
 </style>
 
