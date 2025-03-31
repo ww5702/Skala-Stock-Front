@@ -5,6 +5,7 @@ import StockView from '../views/StockView.vue'
 import PlayerView from '../views/PlayerView.vue' 
 import PlayerForm from '../components/PlayerForm.vue'
 import StockForm from '../components/StockForm.vue'
+import LoginView from '../views/LoginView.vue'
 
 const routes = [
   { path: '/', name: 'home', component: HomeView },
@@ -12,6 +13,7 @@ const routes = [
   { path: '/players', name: 'players', component: PlayerView }, 
   { path: '/register-player', name: 'register-player', component: PlayerForm },
   { path: '/register-stock', name: 'register-stock', component: StockForm },
+  { path: '/login', name: 'login', component: LoginView },
 ]
 
 const router = createRouter({
