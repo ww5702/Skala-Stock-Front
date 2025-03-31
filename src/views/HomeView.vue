@@ -113,11 +113,11 @@ const logout = () => {
         <button type="submit" class="login-btn">로그인</button>
       </form>
     </div>
-
+    
     <!-- 로그인 후 자산 -->
     <div v-if="isLoggedIn" class="welcome">
-      <h3>{{ id }}님 환영합니다!</h3>
-      <p>초기 자본: {{ player.money.toLocaleString() }} 원</p>
+      <h2 class="welcome-title">🎉 {{ id }}님 환영합니다!</h2>
+      <p class="money-text">💰 초기 자본: <strong>{{ player.money.toLocaleString() }} 원</strong></p>
     </div>
 
     <!-- 보유 주식 -->
@@ -132,8 +132,8 @@ const logout = () => {
 
     <!-- 주식 목록 -->
     <div v-if="isLoggedIn" class="stock-container">
-      <h3>📈 주식 목록</h3>
-      <table>
+      <h3 class="stock-title">📈 주식 목록</h3>
+      <table class="stock-table">
         <thead>
           <tr>
             <th>주식 이름</th>
@@ -146,8 +146,8 @@ const logout = () => {
           <tr v-for="stock in stocks" :key="stock.name">
             <td>{{ stock.name }}</td>
             <td>{{ stock.price.toLocaleString() }} 원</td>
-            <td><button @click="buyStock(stock.name)">매수</button></td>
-            <td><button @click="sellStock(stock.name)">매도</button></td>
+            <td><button class="trade-btn buy" @click="buyStock(stock.name)">매수</button></td>
+            <td><button class="trade-btn sell" @click="sellStock(stock.name)">매도</button></td>
           </tr>
         </tbody>
       </table>
@@ -267,5 +267,74 @@ const logout = () => {
   background-color: #fdfdfd;
   border-radius: 8px;
   max-width: 700px;
+
+  .welcome {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.welcome-title {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.money-text {
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.stock-container {
+  border: 1px solid #ccc;
+  padding: 2rem;
+  margin: 2rem auto;
+  background-color: #ffffff;
+  border-radius: 12px;
+  max-width: 800px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.stock-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 1.2rem;
+  text-align: left;
+}
+
+.stock-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stock-table th,
+.stock-table td {
+  padding: 0.8rem;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+.trade-btn {
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+}
+
+.trade-btn.buy {
+  background-color: #3498db;
+  color: white;
+}
+
+.trade-btn.sell {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.trade-btn:hover {
+  opacity: 0.85;
+}
+
 }
 </style>
