@@ -21,7 +21,7 @@ const login = async () => {
   }
 }
 
-// 플레이어 전체 정보 조회 (자산 + 보유 주식)
+// 플레이어 전체 정보 조회
 const fetchPlayer = async () => {
   const res = await axios.get(`/api/players/${id.value}/details`)
   player.value = res.data
@@ -33,7 +33,7 @@ const fetchStocks = async () => {
   stocks.value = res.data
 }
 
-// 매수 요청
+// 매수
 const buyStock = async (stockName) => {
   const quantity = parseInt(prompt(`${stockName} 몇 주 매수하시겠습니까?`), 10)
   if (isNaN(quantity) || quantity <= 0) {
@@ -55,8 +55,7 @@ const buyStock = async (stockName) => {
   }
 }
 
-
-// 매도 요청
+// 매도
 const sellStock = async (stockName) => {
   const quantity = parseInt(prompt(`${stockName} 몇 주 매도하시겠습니까?`), 10)
   if (isNaN(quantity) || quantity <= 0) {
@@ -78,7 +77,6 @@ const sellStock = async (stockName) => {
   }
 }
 
-
 // 로그아웃
 const logout = () => {
   id.value = ''
@@ -91,29 +89,32 @@ const logout = () => {
 </script>
 
 <template>
-  <div class="home-container">
-    <!-- 오른쪽 상단 로그아웃 버튼 -->
+  <div class="main-wrapper">
+    <!-- 타이틀 -->
+    <h1 class="main-title">SKALA 주식 시장</h1>
+
+    <!-- 로그아웃 버튼 -->
     <div v-if="isLoggedIn" class="top-right">
       <button @click="logout">로그아웃</button>
     </div>
 
     <!-- 로그인 폼 -->
-    <div v-if="!isLoggedIn">
+    <div v-if="!isLoggedIn" class="login-box">
       <h2>로그인</h2>
       <form @submit.prevent="login">
-        <div>
+        <div class="form-group">
           <label for="id">아이디:</label>
           <input id="id" v-model="id" required />
         </div>
-        <div>
+        <div class="form-group">
           <label for="password">비밀번호:</label>
           <input id="password" v-model="password" type="password" required />
         </div>
-        <button type="submit">로그인</button>
+        <button type="submit" class="login-btn">로그인</button>
       </form>
     </div>
 
-    <!-- 로그인 후 환영 메시지 및 자산 -->
+    <!-- 로그인 후 자산 -->
     <div v-if="isLoggedIn" class="welcome">
       <h3>{{ id }}님 환영합니다!</h3>
       <p>초기 자본: {{ player.money.toLocaleString() }} 원</p>
@@ -122,17 +123,17 @@ const logout = () => {
     <!-- 보유 주식 -->
     <div v-if="isLoggedIn && player.stocks.length">
       <h3>📦 보유 주식</h3>
-      <ul>
+      <ul class="stock-list">
         <li v-for="s in player.stocks" :key="s.name">
           {{ s.name }} - {{ s.quantity }}주 ({{ s.price.toLocaleString() }}원)
         </li>
       </ul>
     </div>
 
-    <!-- 📈 주식 목록 -->
+    <!-- 주식 목록 -->
     <div v-if="isLoggedIn" class="stock-container">
       <h3>📈 주식 목록</h3>
-      <table border="1" cellpadding="10">
+      <table>
         <thead>
           <tr>
             <th>주식 이름</th>
@@ -158,9 +159,88 @@ const logout = () => {
 </template>
 
 <style scoped>
-.home-container {
+.main-wrapper {
+  text-align: center;
+  padding: 4rem 1rem;
+  background: linear-gradient(to bottom, #f9f9f9, #e0ecff);
+  min-height: 100vh;
+}
+
+.main-title {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  animation: fadeInDown 1s ease-out;
+}
+
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animation-box img {
+  max-width: 280px;
+  margin: 1.5rem auto;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.login-box {
+  background-color: #ffffff;
+  max-width: 400px;
+  margin: 2rem auto;
   padding: 2rem;
-  position: relative;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.login-btn {
+  width: 50%;
+  padding: 10px;
+  background-color: #2c3e50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  
+  cursor: pointer;
+}
+
+.login-btn:hover {
+  background-color: #34495e;
 }
 
 .top-right {
@@ -169,19 +249,23 @@ const logout = () => {
   right: 1rem;
 }
 
-form {
-  margin-bottom: 1rem;
-}
-
 .welcome {
   margin-top: 2rem;
+  font-size: 1.1rem;
+}
+
+.stock-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 2rem;
 }
 
 .stock-container {
   border: 1px solid #ccc;
   padding: 16px;
-  margin-top: 20px;
-  background-color: #f9f9f9;
+  margin: 2rem auto;
+  background-color: #fdfdfd;
   border-radius: 8px;
+  max-width: 700px;
 }
 </style>
