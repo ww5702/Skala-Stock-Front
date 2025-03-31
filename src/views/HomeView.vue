@@ -113,21 +113,32 @@ const logout = () => {
         <button type="submit" class="login-btn">로그인</button>
       </form>
     </div>
-    
-    <!-- 로그인 후 자산 -->
+
+    <!-- 로그인 후 환영 메시지 -->
     <div v-if="isLoggedIn" class="welcome">
       <h2 class="welcome-title">🎉 {{ id }}님 환영합니다!</h2>
-      <p class="money-text">💰 초기 자본: <strong>{{ player.money.toLocaleString() }} 원</strong></p>
-    </div>
+      <hr class="divider" />
 
-    <!-- 보유 주식 -->
-    <div v-if="isLoggedIn && player.stocks.length">
-      <h3>📦 보유 주식</h3>
-      <ul class="stock-list">
-        <li v-for="s in player.stocks" :key="s.name">
-          {{ s.name }} - {{ s.quantity }}주 ({{ s.price.toLocaleString() }}원)
-        </li>
-      </ul>
+      <div class="player-info-wrapper">
+        <!-- 왼쪽: 자산 -->
+        <div class="money-box">
+          <p>💰 초기 자본:</p>
+          <p class="bold-money">{{ player.money.toLocaleString() }} 원</p>
+        </div>
+
+        <!-- 오른쪽: 보유 주식 -->
+        <div class="stocks-box">
+          <p class="stock-title">📦 보유 주식</p>
+          <div class="scrollable-stocks">
+            <p v-if="player.stocks.length === 0">보유한 주식이 없습니다.</p>
+            <ul v-else>
+              <li v-for="s in player.stocks" :key="s.name">
+                {{ s.name }} - {{ s.quantity }}주 ({{ s.price.toLocaleString() }}원)
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- 주식 목록 -->
@@ -159,6 +170,7 @@ const logout = () => {
 </template>
 
 <style scoped>
+/* 전체 페이지 배경 및 타이틀 */
 .main-wrapper {
   text-align: center;
   padding: 4rem 1rem;
@@ -185,21 +197,7 @@ const logout = () => {
   }
 }
 
-.animation-box img {
-  max-width: 280px;
-  margin: 1.5rem auto;
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
+/* 로그인 박스 */
 .login-box {
   background-color: #ffffff;
   max-width: 400px;
@@ -228,14 +226,13 @@ const logout = () => {
 }
 
 .login-btn {
-  width: 50%;
+  width: 100%;
   padding: 10px;
   background-color: #2c3e50;
   color: white;
   border: none;
   border-radius: 6px;
   font-size: 1rem;
-  
   cursor: pointer;
 }
 
@@ -243,32 +240,15 @@ const logout = () => {
   background-color: #34495e;
 }
 
+/* 로그아웃 버튼 */
 .top-right {
   position: absolute;
   top: 1rem;
   right: 1rem;
 }
 
+/* 로그인 후 사용자 정보 */
 .welcome {
-  margin-top: 2rem;
-  font-size: 1.1rem;
-}
-
-.stock-list {
-  list-style: none;
-  padding: 0;
-  margin: 0.5rem 0 2rem;
-}
-
-.stock-container {
-  border: 1px solid #ccc;
-  padding: 16px;
-  margin: 2rem auto;
-  background-color: #fdfdfd;
-  border-radius: 8px;
-  max-width: 700px;
-
-  .welcome {
   margin-top: 2rem;
   text-align: center;
 }
@@ -280,11 +260,56 @@ const logout = () => {
   margin-bottom: 0.5rem;
 }
 
-.money-text {
-  font-size: 1.1rem;
-  color: #333;
+.divider {
+  border: none;
+  height: 2px;
+  background-color: #ccc;
+  width: 50%;
+  margin: 1.2rem auto;
 }
 
+/* 사용자 정보 좌우 정렬 */
+.player-info-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.money-box, .stocks-box {
+  background-color: #ffffff;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  min-width: 260px;
+  max-width: 400px;
+  text-align: left;
+}
+
+.money-box p {
+  margin: 0.2rem 0;
+}
+
+.bold-money {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.stock-title {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.scrollable-stocks {
+  max-height: 50px;      /* 최대 높이 제한 */
+  overflow-y: auto;       /* 수직 스크롤 허용 */
+  border-top: 1px solid #eee;
+  padding-top: 0.5rem;
+}
+
+
+/* 주식 목록 테이블 */
 .stock-container {
   border: 1px solid #ccc;
   padding: 2rem;
@@ -335,6 +360,5 @@ const logout = () => {
 .trade-btn:hover {
   opacity: 0.85;
 }
-
-}
 </style>
+
