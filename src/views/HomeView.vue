@@ -162,7 +162,12 @@ const logout = () => {
               <p v-if="player.stocks.length === 0">보유한 주식이 없습니다.</p>
               <ul v-else>
                 <li v-for="s in player.stocks" :key="s.name">
-                  {{ s.name }} - {{ s.quantity }}주 ({{ s.price.toLocaleString() }}원)
+                  {{ s.name }} - {{ s.quantity }}주
+                  (매수가: {{ s.price.toLocaleString() }}원 /
+                  현재가:
+                  {{
+                    stocks.find(stock => stock.name === s.name)?.price.toLocaleString() || '조회 불가'
+                  }}원)
                 </li>
               </ul>
             </div>
