@@ -30,7 +30,7 @@ import axios from 'axios'
 const players = ref([])
 
 const fetchPlayers = async () => {
-  const res = await axios.get('/api/players')
+  const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/players`)
   players.value = res.data
 }
 

@@ -8,7 +8,7 @@ const money = ref()
 
 const registerPlayer = async () => {
   try {
-    await axios.post('/api/players', {
+    await axios.post(`${import.meta.env.VITE_API_URL}/api/players`, {
       id: id.value,
       password: password.value,
       money: money.value

@@ -12,7 +12,7 @@ const player = ref({ money: 0, stocks: [] })
 // 로그인 요청
 const login = async () => {
   try {
-    const res = await axios.post('/api/players/login', { id: id.value, password: password.value })
+    const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/players/login`, { id: id.value, password: password.value })
     isLoggedIn.value = true
     await fetchPlayer()
     await fetchStocks()
@@ -24,13 +24,13 @@ const login = async () => {
 
 // 플레이어 전체 정보 조회
 const fetchPlayer = async () => {
-  const res = await axios.get(`/api/players/${id.value}/details`)
+  const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/players/${id.value}/details`)
   player.value = res.data
 }
 
 // 전체 주식 목록 조회
 const fetchStocks = async () => {
-  const res = await axios.get('/api/stocks')
+  const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/stocks`)
   stocks.value = [...res.data]
 }
 
@@ -49,7 +49,7 @@ const buyStock = async (stockName) => {
   }
 
   try {
-    await axios.post('/api/trade/buy', {
+    await axios.post(`${import.meta.env.VITE_API_URL}/api/trade/buy`, {
       playerId: id.value,
       stockName,
       quantity
@@ -71,7 +71,7 @@ const sellStock = async (stockName) => {
   }
 
   try {
-    const res = await axios.post('/api/trade/sell', {
+    const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/trade/sell`, {
       playerId: id.value,
       stockName,
       quantity
@@ -460,13 +460,7 @@ const getRate = (s) => {
   margin-top: 4px;
 }
 
-.stock-subtitle {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #2c3e50;
-  margin-bottom: 2rem;
-  animation: fadeInDown 1s ease-out;
-}
+
 
 </style>
 

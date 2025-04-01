@@ -9,7 +9,7 @@ const router = useRouter()
 
 const login = async () => {
   try {
-    const res = await axios.post('/api/player/login', {
+    const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/player/login`, {
       id: id.value,
       password: password.value
     })
