@@ -17,9 +17,14 @@ import axios from 'axios'
 
 const stocks = ref([])
 
-onMounted(async () => {
+const fetchStocks = async () => {
   const res = await axios.get('http://localhost:8080/api/stocks')
   stocks.value = res.data
+}
+
+onMounted(() => {
+  fetchStocks()
+  setInterval(fetchStocks, 5000) // ⏱ 5초마다 자동으로 주식 다시 가져오기
 })
 </script>
 

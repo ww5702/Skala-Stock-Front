@@ -16,6 +16,7 @@ const login = async () => {
     isLoggedIn.value = true
     await fetchPlayer()
     await fetchStocks()
+    startStockPolling() // 주식 갱신 지속
   } catch (e) {
     alert('로그인 실패: ' + (e.response?.data?.message || e.message))
   }
@@ -30,8 +31,14 @@ const fetchPlayer = async () => {
 // 전체 주식 목록 조회
 const fetchStocks = async () => {
   const res = await axios.get('/api/stocks')
-  stocks.value = res.data
+  stocks.value = [...res.data]
 }
+
+// 5초마다 주식 갱신
+const startStockPolling = () => {
+  setInterval(fetchStocks, 5000)
+}
+
 
 // 매수
 const buyStock = async (stockName) => {
