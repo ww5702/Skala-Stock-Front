@@ -1,7 +1,7 @@
 <template>
   <div class="stock-wrapper">
     <h1 class="stock-title">📈 전체 주식 목록</h1>
-    
+    <h4 class="stock-subtitle">5초마다 가격이 변동됩니다.</h4>
     <ul class="stock-list">
       <li v-for="stock in stocks" :key="stock.name">
         <span class="stock-name">{{ stock.name }}</span>
@@ -38,6 +38,13 @@ onMounted(() => {
 
 .stock-title {
   font-size: 2.2rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  animation: fadeInDown 1s ease-out;
+}
+.stock-subtitle {
+  font-size: 1.2rem;
   font-weight: bold;
   color: #2c3e50;
   margin-bottom: 2rem;

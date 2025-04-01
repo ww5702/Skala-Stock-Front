@@ -130,6 +130,7 @@ const getRate = (s) => {
     <!-- 로그인 후 화면 -->
     <div v-if="isLoggedIn" class="welcome">
       <h2 class="welcome-title">🎉 {{ id }}님 환영합니다!</h2>
+      <h4 class="stock-subtitle">5초마다 가격이 변동됩니다.</h4>
       <hr class="divider" />
 
       <div class="layout-grid centered-layout align-top">
@@ -159,7 +160,7 @@ const getRate = (s) => {
         <!-- 오른쪽: 초기 자본 + 보유 주식 -->
         <div class="player-info-column align-start">
           <div class="money-box bordered-box">
-            <p>💰 초기 자본:</p>
+            <p>💰 현재 자본:</p>
             <p class="bold-money">{{ player.money.toLocaleString() }} 원</p>
           </div>
 
@@ -342,6 +343,7 @@ const getRate = (s) => {
   overflow-y: auto;       /* 수직 스크롤 허용 */
   border-top: 1px solid #eee;
   padding-top: 0.5rem;
+  align-items: flex-start; 
 }
 
 
@@ -352,7 +354,7 @@ const getRate = (s) => {
   margin: 2rem auto;
   background-color: #ffffff;
   border-radius: 12px;
-  max-width: 1200px;
+  max-width: 1500px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
@@ -373,6 +375,14 @@ const getRate = (s) => {
   padding: 0.8rem;
   border-bottom: 1px solid #ddd;
   text-align: center;
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stock-table th:nth-child(2),
+.stock-table td:nth-child(2) {
+  width: 120px; /* 💡 가격 열 고정 넓이 설정 */
 }
 
 .trade-btn {
@@ -442,11 +452,20 @@ const getRate = (s) => {
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.05);
   text-align: left;
+  list-style: none;
 }
 
 .stock-detail span {
   display: block;
   margin-top: 4px;
+}
+
+.stock-subtitle {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  animation: fadeInDown 1s ease-out;
 }
 
 </style>
