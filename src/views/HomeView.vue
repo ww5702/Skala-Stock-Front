@@ -93,6 +93,13 @@ const logout = () => {
   stocks.value = []
   errorMessage.value = ''
 }
+// 수익률 계산
+const getRate = (s) => {
+  const current = stocks.value.find(stock => stock.name === s.name)?.price
+  if (!current) return 0
+  return ((current - s.price) / s.price) * 100
+}
+
 </script>
 
 <template>
@@ -161,13 +168,30 @@ const logout = () => {
             <div class="scrollable-stocks">
               <p v-if="player.stocks.length === 0">보유한 주식이 없습니다.</p>
               <ul v-else>
-                <li v-for="s in player.stocks" :key="s.name">
-                  {{ s.name }} - {{ s.quantity }}주
-                  (매수가: {{ s.price.toLocaleString() }}원 /
-                  현재가:
-                  {{
-                    stocks.find(stock => stock.name === s.name)?.price.toLocaleString() || '조회 불가'
-                  }}원)
+                <li
+                  v-for="s in player.stocks"
+                  :key="s.name"
+                  class="stock-item"
+                >
+                  <div class="stock-header">
+                    <strong>{{ s.name }} ({{ s.quantity }}주)</strong>
+                  </div>
+                  <div class="stock-detail">
+                    <span>매수가: {{ s.price.toLocaleString() }}원</span>
+                    <span>
+                      현재가:
+                      {{
+                        stocks.find(stock => stock.name === s.name)?.price.toLocaleString() || '조회 불가'
+                      }}원
+                    </span>
+                    <span
+                      :style="{
+                        color: getRate(s) > 0 ? 'green' : getRate(s) < 0 ? 'red' : '#555'
+                      }"
+                    >
+                      수익률: {{ getRate(s).toFixed(1) }}%
+                    </span>
+                  </div>
                 </li>
               </ul>
             </div>
@@ -410,5 +434,20 @@ const logout = () => {
 .stocks-box {
   margin-top: 0;
 }
+
+.stock-item {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #fdfdfd;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  text-align: left;
+}
+
+.stock-detail span {
+  display: block;
+  margin-top: 4px;
+}
+
 </style>
 
